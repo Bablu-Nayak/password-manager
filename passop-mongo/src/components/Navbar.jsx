@@ -21,6 +21,7 @@ const Navbar = () => {
                     <span className='font-bold px-2'>GitHub</span>
 
                 </button>
+                
             </div>
         </nav>
     )
