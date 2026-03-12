@@ -4,17 +4,21 @@ const Login = ({ setIsLoggedIn }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleLogin = (e) => {
     e.preventDefault();
 
-    // Demo credentials
     if (username === "admin" && password === "1234") {
       localStorage.setItem("isLoggedIn", "true");
       setIsLoggedIn(true);
     } else {
       setError("Invalid username or password");
     }
+  };
+
+  const handleForgotPassword = () => {
+    setMessage("Demo Reset: Username = admin | Password = 1234");
   };
 
   return (
@@ -30,7 +34,7 @@ const Login = ({ setIsLoggedIn }) => {
         <input
           type="text"
           placeholder="Username"
-          className="w-full mb-4 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+          className="w-full mb-4 p-2 border rounded-lg"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
@@ -38,18 +42,32 @@ const Login = ({ setIsLoggedIn }) => {
         <input
           type="password"
           placeholder="Password"
-          className="w-full mb-4 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+          className="w-full mb-2 p-2 border rounded-lg"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+
+        <div className="text-right mb-3">
+          <button
+            type="button"
+            onClick={handleForgotPassword}
+            className="text-blue-500 text-sm hover:underline"
+          >
+            Forgot Password?
+          </button>
+        </div>
 
         {error && (
           <p className="text-red-500 text-sm mb-3 text-center">{error}</p>
         )}
 
+        {message && (
+          <p className="text-green-600 text-sm mb-3 text-center">{message}</p>
+        )}
+
         <button
           type="submit"
-          className="w-full bg-green-500 hover:bg-green-400 text-white py-2 rounded-lg transition duration-200"
+          className="w-full bg-green-500 hover:bg-green-400 text-white py-2 rounded-lg"
         >
           Login
         </button>

@@ -1,54 +1,94 @@
 const express = require('express')
 const dotenv = require('dotenv')
-const { MongoClient } = require('mongodb'); 
+const mysql = require('mysql2')
 const bodyparser = require('body-parser')
 const cors = require('cors')
 
 dotenv.config()
 
-
-// Connecting to the MongoDB Client
-const url = process.env.MONGO_URI;
-const client = new MongoClient(url);
-client.connect();
-
-// App & Database
-const dbName = process.env.DB_NAME 
+// App
 const app = express()
-const port = 3000 
+const port = 3000
 
 // Middleware
 app.use(bodyparser.json())
 app.use(cors())
 
-
-// Get all the passwords
-app.get('/', async (req, res) => {
-    const db = client.db(dbName);
-    const collection = db.collection('passwords');
-    const findResult = await collection.find({}).toArray();
-    res.json(findResult)
+// MySQL Connection
+const db = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "root@1527",
+    database: "passop_db"
 })
+
+db.connect((err) => {
+    if (err) {
+        console.log("Database connection failed:", err)
+    } else {
+        console.log("Connected to MySQL Database")
+    }
+})
+
+
+// Get all passwords
+app.get('/', (req, res) => {
+
+    const sql = "SELECT * FROM passwords"
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            console.log(err)
+            res.status(500).send("Database error")
+        } else {
+            res.json(result)
+        }
+    })
+})
+
 
 // Save a password
-app.post('/', async (req, res) => { 
-    const password = req.body
-    const db = client.db(dbName);
-    const collection = db.collection('passwords');
-    const findResult = await collection.insertOne(password);
-    res.send({success: true, result: findResult})
+app.post('/', (req, res) => {
+
+    const { site, username, password } = req.body
+
+    const sql = "INSERT INTO passwords (site, username, password) VALUES (?, ?, ?)"
+
+    db.query(sql, [site, username, password], (err, result) => {
+
+        if (err) {
+            console.log(err)
+            res.status(500).send("Database error")
+        } else {
+            res.send({ success: true, result: result })
+        }
+
+    })
+
 })
 
-// Delete a password by id
-app.delete('/', async (req, res) => { 
-    const password = req.body
-    const db = client.db(dbName);
-    const collection = db.collection('passwords');
-    const findResult = await collection.deleteOne(password);
-    res.send({success: true, result: findResult})
+
+// Delete password by id
+app.delete('/', (req, res) => {
+
+    const { id } = req.body
+
+    const sql = "DELETE FROM passwords WHERE id = ?"
+
+    db.query(sql, [id], (err, result) => {
+
+        if (err) {
+            console.log(err)
+            res.status(500).send("Database error")
+        } else {
+            res.send({ success: true, result: result })
+        }
+
+    })
+
 })
 
 
 app.listen(port, () => {
-    console.log(`Example app listening on  http://localhost:${port}`)
+    console.log(`Example app listening on http://localhost:${port}`)
 })
