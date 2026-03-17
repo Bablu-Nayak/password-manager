@@ -1,10 +1,12 @@
 import { useState } from "react";
+import ForgotPassword from "./ForgotPassword";
 
 const Login = ({ setIsLoggedIn }) => {
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
+  const [showForgot, setShowForgot] = useState(false);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -17,9 +19,10 @@ const Login = ({ setIsLoggedIn }) => {
     }
   };
 
-  const handleForgotPassword = () => {
-    setMessage("Demo Reset: Username = admin | Password = 1234");
-  };
+  // 👉 If forgot password clicked → show new page
+  if (showForgot) {
+    return <ForgotPassword setShowForgot={setShowForgot} />;
+  }
 
   return (
     <div className="flex items-center justify-center h-screen bg-green-50">
@@ -50,7 +53,7 @@ const Login = ({ setIsLoggedIn }) => {
         <div className="text-right mb-3">
           <button
             type="button"
-            onClick={handleForgotPassword}
+            onClick={() => setShowForgot(true)}
             className="text-blue-500 text-sm hover:underline"
           >
             Forgot Password?
@@ -59,10 +62,6 @@ const Login = ({ setIsLoggedIn }) => {
 
         {error && (
           <p className="text-red-500 text-sm mb-3 text-center">{error}</p>
-        )}
-
-        {message && (
-          <p className="text-green-600 text-sm mb-3 text-center">{message}</p>
         )}
 
         <button
